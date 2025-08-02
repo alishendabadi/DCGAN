@@ -53,7 +53,7 @@ def test_forward_pass(generator, discriminator, device):
         fake_outputs = discriminator(fake_images)
         
         # Test discriminator on random noise (should work but give low confidence)
-        random_images = torch.randn(batch_size, 1, 28, 28, device=device)
+        random_images = torch.randn(batch_size, 3, 512, 512, device=device)
         random_outputs = discriminator(random_images)
         
         print(f"✓ Forward pass successful")
@@ -77,7 +77,7 @@ def test_sample_generation(generator, device):
         # Denormalize
         samples = (samples + 1) / 2.0
         # Create visualization
-        fig, axes = plt.subplots(4, 4, figsize=(8, 8))
+        fig, axes = plt.subplots(4, 4, figsize=(20, 20))  # Larger figure for 512x512 images
         for i in range(16):
             row, col = i // 4, i % 4
             img = np.transpose(samples[i].numpy(), (1, 2, 0))

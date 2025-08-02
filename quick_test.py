@@ -48,8 +48,8 @@ def quick_train():
     
     # Load data with smaller batch size for quick test
     transform = transforms.Compose([
-        transforms.Resize(64),
-        transforms.CenterCrop(64),
+        transforms.Resize(512),
+        transforms.CenterCrop(512),
         transforms.ToTensor(),
         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
     ])
@@ -134,14 +134,14 @@ def quick_train():
         
         # Save a grid of images
         fake_images = (fake_images + 1) / 2.0  # Denormalize from [-1, 1] to [0, 1]
-        fig, axes = plt.subplots(4, 4, figsize=(8, 8))
+        fig, axes = plt.subplots(4, 4, figsize=(20, 20))  # Larger figure for 512x512 images
         for i in range(16):
             row, col = i // 4, i % 4
             img = np.transpose(fake_images[i].numpy(), (1, 2, 0))
             axes[row, col].imshow(img)
             axes[row, col].axis('off')
         plt.tight_layout()
-        plt.savefig(f'samples/quick_test_epoch_{epoch+1:03d}.png')
+        plt.savefig(f'samples/quick_test_epoch_{epoch+1:03d}.png', dpi=150, bbox_inches='tight')
         plt.close()
         
         # Print epoch summary

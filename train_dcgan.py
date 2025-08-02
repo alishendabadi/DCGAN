@@ -15,8 +15,8 @@ print(f"Using device: {device}")
 
 # Hyperparameters
 latent_dim = 100
-image_size = 64  # Updated for faces
-batch_size = 64
+image_size = 512  # Updated for 512x512 images
+batch_size = 16  # Reduced batch size for larger images
 num_epochs = 100
 lr = 0.0002
 beta1 = 0.5
@@ -47,7 +47,19 @@ class Generator(nn.Module):
             nn.BatchNorm2d(64),
             nn.ReLU(True),
             # 64 x 32 x 32
-            nn.ConvTranspose2d(64, 3, 4, 2, 1, bias=False),  # 64x64, 3 channels
+            nn.ConvTranspose2d(64, 32, 4, 2, 1, bias=False),  # 64x64
+            nn.BatchNorm2d(32),
+            nn.ReLU(True),
+            # 32 x 64 x 64
+            nn.ConvTranspose2d(32, 16, 4, 2, 1, bias=False),  # 128x128
+            nn.BatchNorm2d(16),
+            nn.ReLU(True),
+            # 16 x 128 x 128
+            nn.ConvTranspose2d(16, 8, 4, 2, 1, bias=False),  # 256x256
+            nn.BatchNorm2d(8),
+            nn.ReLU(True),
+            # 8 x 256 x 256
+            nn.ConvTranspose2d(8, 3, 4, 2, 1, bias=False),  # 512x512, 3 channels
             nn.Tanh()
         )
     def forward(self, x):
@@ -57,8 +69,17 @@ class Discriminator(nn.Module):
     def __init__(self):
         super(Discriminator, self).__init__()
         self.main = nn.Sequential(
-            # Input: 3 x 64 x 64
-            nn.Conv2d(3, 64, 4, 2, 1, bias=False),  # 32x32
+            # Input: 3 x 512 x 512
+            nn.Conv2d(3, 8, 4, 2, 1, bias=False),  # 256x256
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Conv2d(8, 16, 4, 2, 1, bias=False),  # 128x128
+            nn.BatchNorm2d(16),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Conv2d(16, 32, 4, 2, 1, bias=False),  # 64x64
+            nn.BatchNorm2d(32),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Conv2d(32, 64, 4, 2, 1, bias=False),  # 32x32
+            nn.BatchNorm2d(64),
             nn.LeakyReLU(0.2, inplace=True),
             nn.Conv2d(64, 128, 4, 2, 1, bias=False),  # 16x16
             nn.BatchNorm2d(128),
@@ -107,14 +128,14 @@ def save_samples(generator, epoch, fixed_noise):
     with torch.no_grad():
         fake_images = generator(fixed_noise).detach().cpu()
     fake_images = (fake_images + 1) / 2.0  # Denormalize from [-1, 1] to [0, 1]
-    fig, axes = plt.subplots(4, 4, figsize=(8, 8))
+    fig, axes = plt.subplots(4, 4, figsize=(20, 20))  # Larger figure for 512x512 images
     for i in range(16):
         row, col = i // 4, i % 4
         img = np.transpose(fake_images[i].numpy(), (1, 2, 0))
         axes[row, col].imshow(img)
         axes[row, col].axis('off')
     plt.tight_layout()
-    plt.savefig(f'samples/epoch_{epoch:03d}.png')
+    plt.savefig(f'samples/epoch_{epoch:03d}.png', dpi=150, bbox_inches='tight')
     plt.close()
 
 def train():
