@@ -9,11 +9,11 @@ DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Model hyperparameters
 LATENT_DIM = 100
-IMAGE_SIZE = 512  # Updated for 512x512 images
+IMAGE_SIZE = 256  # Updated for 256x256 images
 IMAGE_CHANNELS = 3  # RGB images
 
 # Training hyperparameters
-BATCH_SIZE = 16  # Reduced for larger images
+BATCH_SIZE = 32  # Increased for 256x256 images
 NUM_EPOCHS = 100
 LEARNING_RATE = 0.0002
 BETA1 = 0.5
@@ -37,8 +37,8 @@ NUM_SAMPLES_TO_GENERATE = 16
 SAMPLE_GRID_SIZE = 4  # 4x4 grid
 
 # Model architecture
-GENERATOR_FEATURES = [512, 256, 128, 64, 32, 16, 8, 3]  # Number of features in each layer
-DISCRIMINATOR_FEATURES = [8, 16, 32, 64, 128, 256, 512, 1]  # Number of features in each layer
+GENERATOR_FEATURES = [512, 256, 128, 64, 32, 16, 3]  # Number of features in each layer
+DISCRIMINATOR_FEATURES = [16, 32, 64, 128, 256, 512, 1]  # Number of features in each layer
 
 # Loss function
 LOSS_FUNCTION = 'BCE'  # Binary Cross Entropy

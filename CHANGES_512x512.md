@@ -1,10 +1,10 @@
-# DCGAN Changes for 512x512 Images
+# DCGAN Changes for 256x256 Images
 
-This document outlines the changes made to adapt the DCGAN project from 64x64 images to 512x512 images.
+This document outlines the changes made to adapt the DCGAN project from 64x64 images to 256x256 images.
 
 ## Overview
 
-The original DCGAN was designed for 64x64 images. To support 512x512 images, significant architectural changes were required due to the much larger image size.
+The original DCGAN was designed for 64x64 images. To support 256x256 images, architectural changes were required to handle the larger image size while maintaining good performance.
 
 ## Key Changes Made
 
@@ -12,33 +12,33 @@ The original DCGAN was designed for 64x64 images. To support 512x512 images, sig
 
 #### Generator
 - **Original**: 5 layers (4x4 → 8x8 → 16x16 → 32x32 → 64x64)
-- **New**: 8 layers (4x4 → 8x8 → 16x16 → 32x32 → 64x64 → 128x128 → 256x256 → 512x512)
-- Added 3 additional transposed convolution layers to reach 512x512
+- **New**: 7 layers (4x4 → 8x8 → 16x16 → 32x32 → 64x64 → 128x128 → 256x256)
+- Added 2 additional transposed convolution layers to reach 256x256
 
 #### Discriminator
 - **Original**: 5 layers (64x64 → 32x32 → 16x16 → 8x8 → 4x4 → 1x1)
-- **New**: 8 layers (512x512 → 256x256 → 128x128 → 64x64 → 32x32 → 16x16 → 8x8 → 4x4 → 1x1)
-- Added 3 additional convolution layers to handle the larger input
+- **New**: 7 layers (256x256 → 128x128 → 64x64 → 32x32 → 16x16 → 8x8 → 4x4 → 1x1)
+- Added 2 additional convolution layers to handle the larger input
 
 ### 2. Configuration Updates
 
 #### train_dcgan.py
-- Changed `image_size` from 64 to 512
-- Reduced `batch_size` from 64 to 16 (to handle larger images and prevent memory issues)
+- Changed `image_size` from 64 to 256
+- Increased `batch_size` from 64 to 32 (good balance for 256x256 images)
 - Updated all layer dimensions in Generator and Discriminator
 
 #### config.py
-- Updated `IMAGE_SIZE` from 28 to 512
+- Updated `IMAGE_SIZE` from 28 to 256
 - Changed `IMAGE_CHANNELS` from 1 to 3 (RGB instead of grayscale)
-- Reduced `BATCH_SIZE` from 64 to 16
+- Increased `BATCH_SIZE` from 64 to 32
 - Updated feature arrays for both Generator and Discriminator
 
 ### 3. Visualization Updates
 
 #### All visualization functions updated:
-- Increased figure sizes from 8x8 to 20x20 inches for better visibility
-- Added proper RGB image handling (removed grayscale assumptions)
-- Updated DPI and bbox_inches parameters for better quality output
+- Adjusted figure sizes to 12x12 inches for optimal visibility of 256x256 images
+- Maintained proper RGB image handling
+- Kept high-quality output with DPI and bbox_inches parameters
 
 ### 4. Files Modified
 
@@ -50,13 +50,13 @@ The original DCGAN was designed for 64x64 images. To support 512x512 images, sig
 
 ## Memory Considerations
 
-- **Batch size reduced**: From 64 to 16 to prevent GPU memory overflow
-- **Larger model**: More layers mean more parameters and memory usage
-- **Training time**: Will be significantly longer due to larger images and more parameters
+- **Batch size optimized**: Set to 32 for good balance between memory usage and training efficiency
+- **Moderate model size**: 7 layers provide good capacity without excessive memory usage
+- **Training time**: Moderate increase compared to 64x64, but much faster than 512x512
 
 ## Usage
 
-The project now works with 512x512 RGB images. Place your training images in the `./data/` directory and run:
+The project now works with 256x256 RGB images. Place your training images in the `./data/` directory and run:
 
 ```bash
 python train_dcgan.py
@@ -74,13 +74,13 @@ python generate_samples.py --model_path checkpoints/final_model.pth
 
 ## Requirements
 
-- More GPU memory (recommended: 8GB+ VRAM)
-- Longer training time
-- Larger storage space for samples and checkpoints
+- Moderate GPU memory (recommended: 4GB+ VRAM)
+- Reasonable training time
+- Standard storage space for samples and checkpoints
 
 ## Notes
 
-- The architecture now has 8 layers instead of 5, which increases model complexity
-- Training will require more epochs to converge due to the larger image size
-- Generated images will be much higher resolution (512x512 vs 64x64)
-- Consider using gradient clipping if training becomes unstable 
+- The architecture now has 7 layers instead of 5, providing good capacity for 256x256 images
+- Training will require more epochs than 64x64 but fewer than 512x512
+- Generated images will be high resolution (256x256) with good detail
+- This is a good balance between image quality and computational requirements 

@@ -49,7 +49,7 @@ def generate_samples(model_path, num_samples=16, save_path='generated_samples.pn
     
     # Create a grid of images
     grid_size = int(np.ceil(np.sqrt(num_samples)))
-    fig, axes = plt.subplots(grid_size, grid_size, figsize=(15, 15))
+    fig, axes = plt.subplots(grid_size, grid_size, figsize=(10, 10))
     
     for i in range(num_samples):
         row = i // grid_size
@@ -115,7 +115,7 @@ def generate_interpolation(model_path, num_steps=10, save_path='interpolation.pn
     interpolated_images = (interpolated_images + 1) / 2.0  # Denormalize
     
     # Create figure
-    fig, axes = plt.subplots(1, num_steps, figsize=(3*num_steps, 3))
+    fig, axes = plt.subplots(1, num_steps, figsize=(2*num_steps, 2))
     
     for i in range(num_steps):
         img = np.transpose(interpolated_images[i].numpy(), (1, 2, 0))  # Convert to HWC format
